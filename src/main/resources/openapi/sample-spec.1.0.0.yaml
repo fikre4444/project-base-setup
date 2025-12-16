@@ -1,0 +1,32 @@
+openapi: 3.0.1
+info:
+  title: sample-service
+  description: sample service
+  version: "1"
+  termsOfService: api/v1
+  contact: {}
+servers:
+  - url: https://sampleset.io/api/v1
+    description: sampleset API server
+    variables:
+      base path:
+        default: v1
+        description: This value is assigned by the service provider, in this example `v1`
+tags:
+  - name: Sample
+    description: ""
+paths:
+  /sample/say-hello:
+    get:
+      tags:
+        - Sample
+      summary: Hello World Sample Endpoint
+      description: Hello World Sample Endpoint
+      operationId: sayHello
+      responses:
+        "200":
+          description: Hello world sample endpoint
+          content:
+            application/json:
+              schema:
+                type: string

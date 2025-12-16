@@ -1,0 +1,691 @@
+openapi: 3.0.3
+info:
+  title: Shipments API
+  description: API for creating and managing orders
+  termsOfService: http://sampleset.com/terms/
+  contact:
+    name: sampleset
+    email: apiteam@swagger.io
+  version: 1.0.0
+servers:
+  - url: https://sampleset.io/api/v1
+    description: sampleset API server
+    variables:
+      base path:
+        default: v1
+        description: This value is assigned by the service provider, in this example `v1`
+tags:
+  - name: Shipments
+    description: Everything about your shipments
+    externalDocs:
+      description: Find out more
+      url: http://sampleset.io
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auths
+      operationId: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+  /auth/refresh:
+    post:
+      tags:
+        - Auths
+      operationId: refresh
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  description: The refresh token obtained during login.
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Invalid refresh token supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/current-user:
+    get:
+      tags:
+        - Auths
+      operationId: currentUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          description: Bad request
+  /auth/change-password:
+    post:
+      tags:
+        - Auths
+      operationId: resetPassword
+      requestBody:
+        $ref: '#/components/requestBodies/ChangePassword'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad request
+  /auth/update-password:
+    put:
+      tags:
+        - Auths
+      operationId: updatePassword
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - new_password
+                - confirm_password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                new_password:
+                  type: string
+                confirm_password:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad request
+  /auth/send-verify:
+    put:
+      tags:
+        - Auths
+      operationId: sendVerify
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad request
+  /auth/forgot-password:
+    put:
+      tags:
+        - Auths
+      operationId: forgotPassword
+      parameters:
+        - $ref: '#/components/parameters/Email'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad request
+  /users:
+    get:
+      tags:
+        - Auths
+      summary: Get all users
+      description: Returns paged users list
+      operationId: getAllUsers
+      parameters:
+        -   $ref: '#/components/parameters/Role'
+        -   $ref: '#/components/parameters/EmailVerified'
+        -   $ref: '#/components/parameters/Enabled'
+        -   $ref: '#/components/parameters/Exact'
+        -   $ref: '#/components/parameters/Limit'
+        -   $ref: '#/components/parameters/Page'
+        -   $ref: '#/components/parameters/SortBy'
+        -   $ref: '#/components/parameters/SortDir'
+        -   $ref: '#/components/parameters/SearchTerm'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailPaginated'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /user/delete-self:
+    delete:
+      tags:
+        - Auths
+      summary: Disable self user account
+      description: Disables the account of the currently authenticated user.
+      operationId: disableSelfUser
+      responses:
+        '200':
+          description: User account successfully deleted.
+        '400':
+          description: Bad request
+  /users/{id}:
+    get:
+      tags:
+        - Auths
+      summary: Get a user
+      description: Returns a users
+      operationId: getUserById
+      parameters:
+        -   $ref: '#/components/parameters/Identifier'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Auths
+      summary: update users detail
+      description: Returns updated user
+      operationId: updateUser
+      parameters:
+        -   $ref: '#/components/parameters/Identifier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags:
+        - Auths
+      summary: update users availability
+      description: Returns a users
+      operationId: enableUserAvailability
+      parameters:
+        -   $ref: '#/components/parameters/Identifier'
+        -   $ref: '#/components/parameters/Command'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auths/sync-users:
+    post:
+      tags:
+        - Auths
+      summary: "Synchronize all users from Keycloak to the local database"
+      description: "Triggers a full backfill of users and their roles from Keycloak. This is a long-running, idempotent operation. Requires ADMIN role."
+      operationId: syncKeycloakUsers
+      responses:
+        '202':
+          description: "Accepted. The synchronization process has been started in the background."
+        '401':
+          description: "Unauthorized"
+        '403':
+          description: "Forbidden. User does not have the ADMIN role."
+  /health-check:
+    get:
+      tags:
+        - Auths
+      summary: Service Health Check
+      description: A simple public endpoint to check if the service is up and running.
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy and responding.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "UP"
+components:
+  parameters:
+    Identifier:
+      in: path
+      name: id
+      required: true
+      description: identifier
+      schema:
+        type: string
+    Email:
+      name: email
+      in: query
+      required: true
+      schema:
+        type: string
+        description: 'sample@gmail.com'
+    Role:
+      in: query
+      name: role
+      required: true
+      description: role
+      schema:
+        type: string
+    Page:
+      in: query
+      name: page
+      description: Page number
+      schema:
+        type: integer
+    Command:
+      name: command
+      in: query
+      required: true
+      schema:
+        type: string
+        description: enable or disable
+    EmailVerified:
+      in: query
+      name: email-verified
+      description: is the users returned only email verified or not
+      schema:
+        type: boolean
+    Enabled:
+      in: query
+      name: enabled
+      description: is the users returned only enabled or disabled
+      schema:
+        type: boolean
+    Exact:
+      in: query
+      name: exact
+      description: is the users returned only exactly as search term
+      schema:
+        type: boolean
+    Limit:
+      in: query
+      name: limit
+      description: Number of items per page
+      schema:
+        type: integer
+    SortDir:
+      name: sort-dir
+      in: query
+      description: Sort direction
+      required: false
+      schema:
+        type: string
+        default: asc
+        enum:
+          - asc
+          - desc
+    SortBy:
+      name: sort-by
+      in: query
+      description: Sort By
+      required: false
+      schema:
+        type: string
+    SearchTerm:
+      name: search-term
+      in: query
+      description: Sort By
+      required: false
+      schema:
+        type: string
+  schemas:
+    Paginated:
+      type: object
+      properties:
+        total_pages:
+          type: integer
+          format: int64
+        current_page:
+          type: integer
+          format: int64
+        total:
+          type: integer
+          format: int64
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+        is_last:
+          type: boolean
+        is_empty:
+          type: boolean
+    Token:
+      properties:
+        token_type:
+          type: string
+        scope:
+          type: string
+        expires_in:
+          type: number
+          format: int64
+        ext_expires_in:
+          type: number
+          format: int64
+        expires_on:
+          type: number
+          format: int64
+        not_before:
+          type: number
+          format: int64
+        resource:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        id_token:
+          type: string
+        session_state:
+          type: string
+        refresh_expires_in:
+          type: string
+    Credential:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+    UserDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        email_verified:
+          type: boolean
+        attributes:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        self:
+          type: string
+        origin:
+          type: string
+        created_timestamp:
+          format: int64
+          type: integer
+        enabled:
+          type: boolean
+        totp:
+          type: boolean
+        federation_link:
+          type: string
+        service_account_client_id:
+          type: string
+        credentials:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialRepresentation'
+        disableable_credential_types:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        required_actions:
+          type: array
+          items:
+            type: string
+        federated_identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FederatedIdentityRepresentation'
+        realm_roles:
+          type: array
+          items:
+            type: string
+        client_roles:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        client_consents:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserConsentRepresentation'
+        not_before:
+          format: int32
+          type: integer
+        groups:
+          type: array
+          items:
+            type: string
+        access:
+          type: object
+          additionalProperties:
+            type: boolean
+    UserConsentRepresentation:
+      type: object
+      properties:
+        client_id:
+          type: string
+        granted_client_scopes:
+          type: array
+          items:
+            type: string
+        created_date:
+          format: int64
+          type: integer
+        last_updated_date:
+          format: int64
+          type: integer
+    FederatedIdentityRepresentation:
+      type: object
+      properties:
+        identity_provider:
+          type: string
+        user_id:
+          type: string
+        user_name:
+          type: string
+    CredentialRepresentation:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        user_label:
+          type: string
+        created_date:
+          format: int64
+          type: integer
+        secret_data:
+          type: string
+        credential_data:
+          type: string
+        priority:
+          format: int32
+          type: integer
+        value:
+          type: string
+        temporary:
+          type: boolean
+        federation_link:
+          type: string
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        enabled:
+          type: boolean
+          default: true
+        email_verified:
+          type: boolean
+          default: true
+        credentials:
+          type: array
+          items:
+            $ref: "#/components/schemas/Credential"
+        attributes:
+          type: object
+          additionalProperties: { }
+        realm_roles:
+          type: array
+          items:
+            type: string
+    UserDetailPaginated:
+      allOf:
+        -   $ref: '#/components/schemas/Paginated'
+        -   type: object
+            properties:
+              contents:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetail'
+    ErrorResponse:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: Error code.
+          example: INVALID_TOKEN
+        message:
+          type: string
+          description: Error message.
+  requestBodies:
+    CreateUser:
+      description: Lab request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+              confirm_password:
+                type: string
+              first_name:
+                type: string
+              last_name:
+                type: string
+              email:
+                type: string
+    ChangePassword:
+      description: Change password request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              old_password:
+                type: string
+              new_password:
+                type: string
+              confirm_password:
+                type: string

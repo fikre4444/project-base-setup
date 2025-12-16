@@ -1,0 +1,130 @@
+server:
+  port: 8080
+
+management:
+  server:
+    port: 9092
+
+consumer-group:
+  prefix: dev
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 6MB
+      max-request-size: 6MB
+  jackson:
+    default-property-inclusion: NON_NULL
+
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:8180/realms/sample
+        registration:
+          oidc:
+            client-id: auth
+            client-secret: isnVVP2VR3FnE8PLdFjm4tfMuqErIPXt
+            scope: openid, profile, email, offline_access # last one for refresh tokens
+  application:
+    name: sample-service
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/sample_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    open-in-view: true
+    show-sql: false
+    format-sql: true
+    use_sql_comments: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: public
+
+  cors:
+    allowed-origins:
+      - "http://localhost:4200"
+      - "http://localhost:4201"
+    allowed-origins-patterns:
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "OPTIONS"
+      - "DELETE"
+      - "PATCH"
+    allowCredentials: true
+    maxAge: 1800
+
+  springdoc:
+    swagger-ui:
+      url: /v3/api-docs
+      operationsSorter: method #For sorting endpoints by http methods
+      tagsSorter: alpha #For sorting tags alphabetically
+
+keycloak:
+  auth-server-url: http://localhost:8180
+  token-path: /realms/sample/protocol/openid-connect/token
+  realm: sample
+  client:
+    id: registration
+    secret: aG27jhaAWaJyWd0C1qeCmBjaREtQi5mp
+
+logging:
+  level:
+    root: INFO
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: documentation
+      realm: sample
+    operationsSorter: alpha
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  oauth2:
+    authorization-url: http://localhost:8180/realms/sample/protocol/openid-connect/auth
+  enable-native-support: true
+
+application:
+  cache:
+    ehcache:
+      max-entries: 100
+      time-to-live-seconds: 3600
+  #        cache:
+  #            ehcache:
+  #                time-to-live-seconds: 3600
+  #                max-entries: 100
+  cors:
+    allowed-origins:
+      - "http://localhost:4200"
+      - "http://localhost:4201"
+
+    allowed-origin-patterns: "https://*.githubpreview.dev"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count"
+    allow-credentials: true
+    max-age: 1800
+  security:
+    oauth2:
+      audience: account
+#      audience: account,api://default
+minio:
+  endpoint: http://localhost:9000
+  access-key: minio-admin
+  secret-key: minio-admin
+  bucket-name: documents

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd"
+          xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <mirrors>
+        <mirror>
+            <id>release-unblocker</id>
+            <mirrorOf>nexus</mirrorOf>
+            <name></name>
+            <url>http://62.171.137.149:8999/repository/maven-releases/</url>
+        </mirror>
+        <mirror>
+            <id>snapshots-unblocker</id>
+            <mirrorOf>nexus-snapshots</mirrorOf>
+            <name></name>
+            <url>http://62.171.137.149:8999/repository/maven-snapshots/</url>
+        </mirror>
+    </mirrors>
+    <servers>
+        <server>
+            <id>release-unblocker</id>
+            <username>deployment</username>
+            <password>Channel@1234</password>
+        </server>
+        <server>
+            <id>snapshots-unblocker</id>
+            <username>deployment</username>
+            <password>Channel@1234</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <repositories>
+                <repository>
+                    <id>nexus</id>
+                    <name>Releases</name>
+                    <url>http://62.171.137.149:8999/repository/maven-releases/</url>
+                </repository>
+            </repositories>
+            <id>artifactory</id>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>artifactory</activeProfile>
+    </activeProfiles>
+</settings>

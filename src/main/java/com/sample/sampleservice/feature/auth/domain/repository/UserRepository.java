@@ -1,0 +1,52 @@
+package com.sample.sampleservice.feature.auth.domain.repository;
+
+import com.sample.sampleservice.feature.auth.domain.model.ChangePassword;
+import com.sample.sampleservice.feature.auth.domain.model.CreateUser;
+import com.sample.sampleservice.feature.auth.domain.model.OAuth2TokenResult;
+import com.sample.sampleservice.feature.auth.domain.model.UserDetails;
+import com.sample.sampleservice.feature.auth.domain.model.UserRequest;
+import com.sample.sampleservice.shared.pagination.domain.Page;
+import com.sample.sampleservice.shared.pagination.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface UserRepository {
+
+    UserDetails findByUsername(String username);
+
+    UserDetails findByEmail(String email);
+
+    Optional<OAuth2TokenResult> login(String username, String password);
+
+    void updatePassword(String username, ChangePassword changePassword);
+
+    void forgotPassword(String email);
+
+    void sendVerify(String username, String password);
+
+    Optional<OAuth2TokenResult> refresh(String token);
+
+    Optional<UserDetails> getUserDetailById(String userId);
+
+    UserDetails createUser(CreateUser createUser, String role, boolean verified);
+
+    void resetPassword(ChangePassword changePassword);
+
+    Page<UserDetails> findAll(String role, Boolean emailVerified, Boolean enabled, Boolean exact, String search, Pageable pageable);
+    
+    UserDetails update(final String userId, final UserRequest request);
+    
+    List<String> myRoles(String userId);
+
+    UserDetails enableUser(String userId);
+
+    UserDetails disableUser(String userId);
+    
+    void syncKeycloakUsers();
+
+    UserDetails updateUserFromDomainSource(String userId, UserRequest request);
+
+    void checkUserLockoutStatus(String username);
+
+}

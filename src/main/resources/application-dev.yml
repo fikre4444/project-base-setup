@@ -22,17 +22,6 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-  security:
-    oauth2:
-      client:
-        provider:
-          oidc:
-            issuer-uri: http://localhost:8180/realms/sample
-        registration:
-          oidc:
-            client-id: auth
-            client-secret: isnVVP2VR3FnE8PLdFjm4tfMuqErIPXt
-            scope: openid, profile, email, offline_access # last one for refresh tokens
   application:
     name: sample-service
 
@@ -81,28 +70,15 @@ spring:
       operationsSorter: method #For sorting endpoints by http methods
       tagsSorter: alpha #For sorting tags alphabetically
 
-keycloak:
-  auth-server-url: http://localhost:8180
-  token-path: /realms/sample/protocol/openid-connect/token
-  realm: sample
-  client:
-    id: registration
-    secret: aG27jhaAWaJyWd0C1qeCmBjaREtQi5mp
-
 logging:
   level:
     root: INFO
 
 springdoc:
   swagger-ui:
-    oauth:
-      client-id: documentation
-      realm: sample
     operationsSorter: alpha
     tagsSorter: alpha
     tryItOutEnabled: true
-  oauth2:
-    authorization-url: http://localhost:8180/realms/sample/protocol/openid-connect/auth
   enable-native-support: true
 
 application:
@@ -126,11 +102,14 @@ application:
     exposed-headers: "Authorization,Link,X-Total-Count"
     allow-credentials: true
     max-age: 1800
-  security:
-    oauth2:
-      audience: account
+
 minio:
   endpoint: http://localhost:9000
   access-key: minio-admin
   secret-key: minio-admin
   bucket-name: documents
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970 # Must be at least 256-bit (32 bytes)
+  expiration: 86400000 # 1 day
+  refresh-expiration: 604800000 # 7 days

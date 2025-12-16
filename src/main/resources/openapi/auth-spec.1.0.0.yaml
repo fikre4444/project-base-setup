@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Shipments API
-  description: API for creating and managing orders
+  description: API for creating and managing users
   termsOfService: http://sampleset.com/terms/
   contact:
     name: sampleset
@@ -48,6 +48,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Token'
+  /auth/register:
+    post:
+      tags:
+        - Auths
+      summary: Register a new user
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+        required: true
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          description: Bad request (validation failure or user exists)
   /auth/refresh:
     post:
       tags:
@@ -308,20 +329,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /auths/sync-users:
-    post:
-      tags:
-        - Auths
-      summary: "Synchronize all users from Keycloak to the local database"
-      description: "Triggers a full backfill of users and their roles from Keycloak. This is a long-running, idempotent operation. Requires ADMIN role."
-      operationId: syncKeycloakUsers
-      responses:
-        '202':
-          description: "Accepted. The synchronization process has been started in the background."
-        '401':
-          description: "Unauthorized"
-        '403':
-          description: "Forbidden. User does not have the ADMIN role."
   /health-check:
     get:
       tags:
@@ -497,6 +504,8 @@ components:
           type: string
         email_verified:
           type: boolean
+        phone_number:
+          type: string
         attributes:
           type: object
           additionalProperties:
@@ -512,103 +521,14 @@ components:
           type: integer
         enabled:
           type: boolean
-        totp:
-          type: boolean
-        federation_link:
-          type: string
-        service_account_client_id:
-          type: string
-        credentials:
-          type: array
-          items:
-            $ref: '#/components/schemas/CredentialRepresentation'
-        disableable_credential_types:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
         required_actions:
           type: array
           items:
             type: string
-        federated_identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/FederatedIdentityRepresentation'
-        realm_roles:
+        roles:
           type: array
           items:
             type: string
-        client_roles:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        client_consents:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserConsentRepresentation'
-        not_before:
-          format: int32
-          type: integer
-        groups:
-          type: array
-          items:
-            type: string
-        access:
-          type: object
-          additionalProperties:
-            type: boolean
-    UserConsentRepresentation:
-      type: object
-      properties:
-        client_id:
-          type: string
-        granted_client_scopes:
-          type: array
-          items:
-            type: string
-        created_date:
-          format: int64
-          type: integer
-        last_updated_date:
-          format: int64
-          type: integer
-    FederatedIdentityRepresentation:
-      type: object
-      properties:
-        identity_provider:
-          type: string
-        user_id:
-          type: string
-        user_name:
-          type: string
-    CredentialRepresentation:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        user_label:
-          type: string
-        created_date:
-          format: int64
-          type: integer
-        secret_data:
-          type: string
-        credential_data:
-          type: string
-        priority:
-          format: int32
-          type: integer
-        value:
-          type: string
-        temporary:
-          type: boolean
-        federation_link:
-          type: string
     UserRequest:
       type: object
       properties:
@@ -619,6 +539,8 @@ components:
         last_name:
           type: string
         email:
+          type: string
+        phone_number:
           type: string
         enabled:
           type: boolean
@@ -633,10 +555,30 @@ components:
         attributes:
           type: object
           additionalProperties: { }
-        realm_roles:
-          type: array
-          items:
-            type: string
+    RegisterUserRequest:
+      type: object
+      required:
+        - username
+        - password
+        - confirm_password
+        - first_name
+        - last_name
+        - email
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        confirm_password:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
     UserDetailPaginated:
       allOf:
         -   $ref: '#/components/schemas/Paginated'

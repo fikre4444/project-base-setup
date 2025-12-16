@@ -4,8 +4,8 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Setter
@@ -18,83 +18,32 @@ public class UserDetails implements Serializable {
     private static final long serialVersionUID = -1608009883525411542L;
 
     private String id;
-
+    private String username;
+    private String email;
+    
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+    
+    private boolean enabled;
+    private boolean emailVerified;
     private long createdTimestamp;
 
-    private String username;
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
 
-    private boolean enabled;
-
-    private boolean totp;
-
-    private boolean emailVerified;
-
-    private String firstName;
-
-    private String lastName;
-
-    private String email;
-
-    private String phoneNumber;
-
-    private List<String> requiredActions;
-
-    private int notBefore;
-
-    private Map<String, Boolean> access;
-
-    private Map<String, List<String>> attributes;
-
-    private UserProfileMetadata userProfileMetadata;
-
-    private String self;
-
-    private String origin;
-
-    private String federationLink;
-
-    private String serviceAccountClientId;
-
-    private List<CredentialRepresentation> credentials;
-
-    private List<String> disableableCredentialTypes;
-
-    private List<FederatedIdentityRepresentation> federatedIdentities;
-
-    private List<String> realmRoles;
-
-    private Map<String, List<String>> clientRoles;
-
-    private List<UserConsentRepresentation> clientConsents;
-
-    private Map<String, List<String>> applicationRoles;
-
-    private List<SocialLinkRepresentation> socialLinks;
-
-    private List<String> groups;
+    @Builder.Default
+    private List<String> requiredActions = new ArrayList<>(); // e.g. ["VERIFY_EMAIL"]
 
     public enum RequiredAction {
-        UPDATE_PASSWORD
+        UPDATE_PASSWORD,
+        VERIFY_EMAIL
     }
-
-    @Data
-    @Setter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class AccessDto implements Serializable {
-
-        @Serial
-        private static final long serialVersionUID = 7416126919078029231L;
-
-        private boolean manageGroupMembership;
-
-        private boolean view;
-
-        private boolean mapRoles;
-
-        private boolean impersonate;
-
-        private boolean manage;
+    
+    public void addRole(String role) {
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        }
+        this.roles.add(role);
     }
 }

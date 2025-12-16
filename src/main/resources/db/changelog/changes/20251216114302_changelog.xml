@@ -1,0 +1,69 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="HP (generated)" id="1765885391465-1">
+        <createTable tableName="t_s_roles">
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="t_s_rolesPK"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-2">
+        <createTable tableName="t_s_users">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="t_s_usersPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+            <column name="created_timestamp" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="email_verified" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="password_hash" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-3">
+        <createTable tableName="t_user_roles">
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="t_user_rolesPK"/>
+            </column>
+            <column name="role_name" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="t_user_rolesPK"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-4">
+        <addUniqueConstraint columnNames="email" constraintName="UC_T_S_USERSEMAIL_COL" tableName="t_s_users"/>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-5">
+        <addUniqueConstraint columnNames="username" constraintName="UC_T_S_USERSUSERNAME_COL" tableName="t_s_users"/>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-6">
+        <addForeignKeyConstraint baseColumnNames="role_name" baseTableName="t_user_roles" constraintName="FK340ul6mtd2mbc3tyb6iqktlp0" deferrable="false" initiallyDeferred="false" referencedColumnNames="name" referencedTableName="t_s_roles" validate="true"/>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-7">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="t_user_roles" constraintName="FK7kw9wa01pn3ddt2cj8den2kb8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="t_s_users" validate="true"/>
+    </changeSet>
+    <changeSet author="HP (generated)" id="1765885391465-8">
+    <sql>
+        INSERT INTO t_s_roles (name) SELECT 'ROLE_USER' WHERE NOT EXISTS ( SELECT 1 FROM t_s_roles WHERE name = 'ROLE_USER');
+    </sql>
+</changeSet>
+</databaseChangeLog>

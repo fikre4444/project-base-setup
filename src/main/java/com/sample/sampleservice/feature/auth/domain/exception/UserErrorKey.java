@@ -15,7 +15,12 @@ public enum UserErrorKey implements ErrorKey {
     PHONE_NUMBER_REQUIRED("phone.number.required"),
     COMPLEXITY_INVALID("password.complexity.invalid"),
     TOKEN_INACTIVE("TOKEN_INACTIVE"),
-    ACCOUNT_TEMPORARILY_LOCKED("account.temporarily.locked");
+    ACCOUNT_TEMPORARILY_LOCKED("account.temporarily.locked"),
+    BAD_CREDENTIALS("bad.credentials"),
+    USER_LOCKED("user.locked"),
+    ROLE_NOT_FOUND("Role.not.found"),
+    EMAIL_ALREADY_EXISTS("Email.already.exists"),
+    USER_ALREADY_EXISTS("User.already.exists");
 
     private final String key;
 

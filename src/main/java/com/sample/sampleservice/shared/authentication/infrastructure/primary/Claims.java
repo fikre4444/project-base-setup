@@ -12,23 +12,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 final class Claims {
 
-    static final String CLAIMS_NAMESPACE = "http://localhost:8180";
-
     static List<GrantedAuthority> extractAuthorityFromClaims(Map<String, Object> claims) {
         return mapRolesToGrantedAuthorities(getRolesFromClaims(claims));
     }
 
     @SuppressWarnings("unchecked")
     private static Collection<String> getRolesFromClaims(Map<String, Object> claims) {
-
-        return ((Map<String, Object>) claims.getOrDefault("realm_access", new HashMap<>()))
-                .values()
-                .stream()
-                .map(a -> (List<String>) a)
-                .reduce(new ArrayList<>(), (first, second) -> {
-                    first.addAll(second);
-                    return first;
-                });
+        return claims.containsKey("roles") ? ((List<String>)claims.get("roles")) : Collections.emptyList();
     }
 
     @SuppressWarnings("java:S6204")

@@ -1,17 +1,15 @@
 package com.sample.sampleservice.feature.auth.application.impl;
 
 import com.sample.sampleservice.feature.auth.application.UserApplicationService;
-import com.sample.sampleservice.feature.auth.domain.model.ChangePassword;
-import com.sample.sampleservice.feature.auth.domain.model.CreateUser;
-import com.sample.sampleservice.feature.auth.domain.model.OAuth2TokenResult;
-import com.sample.sampleservice.feature.auth.domain.model.UserDetails;
-import com.sample.sampleservice.feature.auth.domain.model.UserRequest;
+import com.sample.sampleservice.feature.auth.domain.model.*;
 import com.sample.sampleservice.feature.auth.domain.repository.UserRepository;
 import com.sample.sampleservice.feature.auth.domain.service.UserDomainService;
 import com.sample.sampleservice.shared.notification.application.NotificationApplicationService;
 import com.sample.sampleservice.shared.pagination.domain.Page;
 import com.sample.sampleservice.shared.pagination.domain.Pageable;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserApplicationServiceImpl implements UserApplicationService {
 
     private final UserDomainService userDomainService;
@@ -66,8 +64,8 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
-    public UserDetails findByUserName(String userName) {
-        return userDomainService.findByUserName(userName);
+    public UserDetails findByUserName(String username) {
+        return userDomainService.findByUserName(username);
     }
 
     @Override
@@ -103,10 +101,5 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public UserDetails disableSelfUser(String userId) {
         return userDomainService.disableSelfUser(userId);
-    }
-
-    @Override
-    public void syncKeycloakUsers() {
-        userDomainService.syncKeycloakUsers();
     }
 }

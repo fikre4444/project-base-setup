@@ -34,6 +34,9 @@ public class UserEntity extends AbstractAuditingEntity<String>{
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "password_hash", length = 60, nullable = false)
+    private String password;
+
     @Column(name = "phone_number")
     private String phoneNumber;
 

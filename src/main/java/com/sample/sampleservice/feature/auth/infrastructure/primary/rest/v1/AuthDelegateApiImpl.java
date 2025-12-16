@@ -2,6 +2,7 @@ package com.sample.sampleservice.feature.auth.infrastructure.primary.rest.v1;
 
 import com.google.common.base.CaseFormat;
 import com.sample.sampleservice.feature.auth.api.rest.v1.AuthsApiDelegate;
+import com.sample.sampleservice.feature.auth.api.rest.v1.model.RegisterUserRequest;
 import com.sample.sampleservice.feature.auth.api.rest.v1.model.ResetPasswordRequest;
 import com.sample.sampleservice.feature.auth.api.rest.v1.model.Token;
 import com.sample.sampleservice.feature.auth.api.rest.v1.model.UserDetail;
@@ -10,8 +11,10 @@ import com.sample.sampleservice.feature.auth.api.rest.v1.model.UserRequest;
 import com.sample.sampleservice.feature.auth.application.UserApplicationService;
 import com.sample.sampleservice.feature.auth.domain.exception.UserErrorKey;
 import com.sample.sampleservice.feature.auth.domain.model.ChangePassword;
+import com.sample.sampleservice.feature.auth.domain.model.CreateUser;
 import com.sample.sampleservice.feature.auth.domain.model.UserDetails;
 import com.sample.sampleservice.feature.auth.infrastructure.primary.mapper.ChangePasswordModelMapper;
+import com.sample.sampleservice.feature.auth.infrastructure.primary.mapper.RegisterUserModelMapper;
 import com.sample.sampleservice.feature.auth.infrastructure.primary.mapper.TokenModelMapper;
 import com.sample.sampleservice.feature.auth.infrastructure.primary.mapper.UserDetailModelMapper;
 import com.sample.sampleservice.feature.auth.infrastructure.primary.mapper.UserRequestModelMapper;
@@ -39,6 +42,7 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
     private final UserDetailModelMapper userDetailModelMapper;
     private final TokenModelMapper tokenModelMapper;
     private final UserRequestModelMapper userRequestModelMapper;
+    private final RegisterUserModelMapper registerUserModelMapper;
 
     @Override
     public ResponseEntity<Void> resetPassword(ResetPasswordRequest changePassword) {
@@ -48,14 +52,14 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> sendVerify(String userName, String password) {
-        userApplicationService.sendVerify(userName, password);
+    public ResponseEntity<Void> sendVerify(String username, String password) {
+        userApplicationService.sendVerify(username, password);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @Override
-    public ResponseEntity<Void> updatePassword(String userName, String password, String newPassword, String confirmPassword) {
-        userApplicationService.updatePassword(userName, new ChangePassword(password, newPassword, confirmPassword));
+    public ResponseEntity<Void> updatePassword(String username, String password, String newPassword, String confirmPassword) {
+        userApplicationService.updatePassword(username, new ChangePassword(password, newPassword, confirmPassword));
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
@@ -90,6 +94,21 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
         .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
         .header(HttpHeaders.SET_COOKIE, accessToken.toString())
         .body(token);
+    }
+
+    @Override
+    public ResponseEntity<UserDetail> register(RegisterUserRequest registerUserRequest) {
+        CreateUser createUserBo = registerUserModelMapper.toBo(registerUserRequest);
+
+        var createdUser = userApplicationService.createUser(
+            createUserBo, 
+            Role.USER.roleName(),
+            true
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userDetailModelMapper.toDto(createdUser));
     }
 
     @Override
@@ -162,13 +181,6 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
         String userId = AuthenticatedUser.getUser().id();
         userApplicationService.disableSelfUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Void> syncKeycloakUsers() {
-        AuthenticatedUser.can(Role.ADMIN);
-        userApplicationService.syncKeycloakUsers();
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @Override

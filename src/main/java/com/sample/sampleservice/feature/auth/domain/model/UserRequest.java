@@ -25,6 +25,8 @@ public class UserRequest {
 
     private String email;
 
+    private String phoneNumber;
+
     @Builder.Default
     private Boolean enabled = true;
 
@@ -36,9 +38,6 @@ public class UserRequest {
 
     @Builder.Default
     private Map<String, Object> attributes = new HashMap<>();
-
-    private List<String> realmRoles;
-
 
     public void clearCredentials() {
         this.credentials = List.of();

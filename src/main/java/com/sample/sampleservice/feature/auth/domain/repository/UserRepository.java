@@ -19,19 +19,19 @@ public interface UserRepository {
 
     Optional<OAuth2TokenResult> login(String username, String password);
 
+    UserDetails createUser(CreateUser createUser, String role, boolean verified);
+
     void updatePassword(String username, ChangePassword changePassword);
+    
+    void resetPassword(ChangePassword changePassword);
 
     void forgotPassword(String email);
 
     void sendVerify(String username, String password);
 
-    Optional<OAuth2TokenResult> refresh(String token);
+    Optional<OAuth2TokenResult> refresh(String refreshToken);
 
     Optional<UserDetails> getUserDetailById(String userId);
-
-    UserDetails createUser(CreateUser createUser, String role, boolean verified);
-
-    void resetPassword(ChangePassword changePassword);
 
     Page<UserDetails> findAll(String role, Boolean emailVerified, Boolean enabled, Boolean exact, String search, Pageable pageable);
     
@@ -42,11 +42,5 @@ public interface UserRepository {
     UserDetails enableUser(String userId);
 
     UserDetails disableUser(String userId);
-    
-    void syncKeycloakUsers();
-
-    UserDetails updateUserFromDomainSource(String userId, UserRequest request);
-
-    void checkUserLockoutStatus(String username);
 
 }

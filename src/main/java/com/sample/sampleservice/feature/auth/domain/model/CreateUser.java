@@ -5,7 +5,7 @@ import com.sample.sampleservice.shared.error.domain.Assert;
 import com.sample.sampleservice.shared.error.domain.GeneratorException;
 import org.apache.commons.lang3.StringUtils;
 
-public record CreateUser(String password, String confirmPassword, String userName, String firstName, String lastName, String email, String phoneNumber) {
+public record CreateUser(String password, String confirmPassword, String username, String firstName, String lastName, String email, String phoneNumber) {
 
     public CreateUser {
         Assert.field("Password", password)

@@ -11,8 +11,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=psql
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI=keycloak:8180/realms/sample
-      - KEYCLOAK_AUTH_SERVER_URL=keycloak:8180
     ports:
       - "8085:8085"
     networks:

@@ -47,3 +47,9 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/sample-service:latest
             ${{ secrets.DOCKER_USERNAME }}/sample-service:${{ github.sha }}
+
+      - name: Trigger Render Deployment
+        if: github.ref == 'refs/heads/base-setup-without-keycloak' && github.event_name != 'pull_request'
+        run: |
+          echo "Triggering Render.com deployment..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}

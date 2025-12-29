@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class UserDomainService {
@@ -80,6 +81,18 @@ public class UserDomainService {
         userRepository.updatePassword(username, changePassword);
     }
 
+    public UserDetails verifyUser(String identifier, String code) {
+        if(!userRepository.verifyOtp(identifier, code)) {
+            throw GeneratorException.badRequest(UserErrorKey.INVALID_OTP).message("Invalid OTP").build();
+        }
+        UserDetails user = getUserDetails(identifier);
+        if(user == null) {
+            throw GeneratorException.badRequest(UserErrorKey.USER_NOT_FOUND).message("User Was Not Found!").build();
+        }
+        var userUpdated = userRepository.setEmailVerified(user);
+        return userUpdated;
+    }
+
     public void sendVerify(String username, String password) {
         userRepository.sendVerify(username, password);
     }
@@ -137,5 +150,34 @@ public class UserDomainService {
                 ));
         
         user.setRoles(roles);
+    }
+
+    private UserDetails getUserDetails(String identifier) {
+        UserDetails user;
+        if (ValidatorUtil.isEmail(identifier)) {
+            user = userRepository.findByEmail(identifier);
+        } else {
+            user = userRepository.findByUsername(identifier);
+        }
+        return user;
+    }
+
+    private static class ValidatorUtil {
+
+        private static final Pattern EMAIL_PATTERN = Pattern.compile(
+                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+        );
+
+        private static final Pattern PHONE_PATTERN = Pattern.compile(
+                "^\\+?[0-9]{7,15}$" // Accepts optional + and 7–15 digits
+        );
+
+        public static boolean isEmail(String input) {
+            return EMAIL_PATTERN.matcher(input).matches();
+        }
+
+        public static boolean isPhoneNumber(String input) {
+            return PHONE_PATTERN.matcher(input).matches();
+        }
     }
 }

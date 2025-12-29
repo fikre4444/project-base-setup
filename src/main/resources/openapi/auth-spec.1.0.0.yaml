@@ -113,6 +113,22 @@ paths:
                 $ref: '#/components/schemas/UserDetail'
         '400':
           description: Bad request
+  /auth/verify-otp:
+    # todo change the verify-otp url later
+    post:
+      tags:
+        - Auths
+      operationId: verifyUser
+      parameters:
+        -   $ref: '#/components/parameters/OtpIdentifier'
+        -   $ref: '#/components/parameters/OtpCode'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
   /auth/change-password:
     post:
       tags:
@@ -353,6 +369,20 @@ components:
       description: identifier
       schema:
         type: string
+    OtpCode:
+      name: code
+      in: query
+      required: true
+      schema:
+        type: string
+        description: '123456'
+    OtpIdentifier:
+      name: identifier
+      in: query
+      required: true
+      schema:
+        type: string
+        description: 'sample@gmail.com'
     Email:
       name: email
       in: query

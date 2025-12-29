@@ -9,6 +9,20 @@ consumer-group:
   prefix: dev
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: abcd@gmail.com
+    password: abcd efgh ijkl mnop
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  threads:
+    virtual:
+      enabled: true
   servlet:
     multipart:
       enabled: true

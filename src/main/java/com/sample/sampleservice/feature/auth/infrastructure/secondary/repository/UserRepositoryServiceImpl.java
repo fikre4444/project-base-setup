@@ -7,8 +7,10 @@ import com.sample.sampleservice.feature.auth.infrastructure.secondary.domain.Rol
 import com.sample.sampleservice.feature.auth.infrastructure.secondary.domain.UserEntity;
 import com.sample.sampleservice.shared.authentication.application.AuthenticatedUser;
 import com.sample.sampleservice.shared.authentication.infrastructure.primary.JwtTokenProvider;
+import com.sample.sampleservice.shared.emailing.service.EmailService;
 import com.sample.sampleservice.shared.error.domain.Assert;
 import com.sample.sampleservice.shared.error.domain.GeneratorException;
+import com.sample.sampleservice.shared.otp.application.OtpApplication;
 import com.sample.sampleservice.shared.pagination.domain.Page;
 import com.sample.sampleservice.shared.pagination.domain.Pageable;
 import jakarta.persistence.criteria.Predicate;
@@ -37,6 +39,8 @@ public class UserRepositoryServiceImpl implements UserRepository {
     private final RoleEntityRepository roleEntityRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
+    private final OtpApplication otpApplication;
 
     @Override
     @Transactional
@@ -65,6 +69,8 @@ public class UserRepositoryServiceImpl implements UserRepository {
                 .build();
 
         userEntityRepository.save(entity);
+        emailService.sendRegistrationEmail(entity.getEmail(), entity.getUsername());
+        sendOtp(entity.getEmail(), entity.getEmail());
         return mapEntityToUserDetails(entity);
     }
 
@@ -82,10 +88,16 @@ public class UserRepositoryServiceImpl implements UserRepository {
         }
         
         if (!user.isEmailVerified()) {
-             throw GeneratorException.badRequest(UserErrorKey.VERIFY_EMAIL).message("You need to verify your email address to activate your account.").build();
+            sendOtp(user.getUsername(), user.getEmail());
+            throw GeneratorException.badRequest(UserErrorKey.VERIFY_EMAIL).message("You need to verify your email address to activate your account.").build();
         }
 
         return Optional.of(generateTokenForUser(user));
+    }
+
+    private void sendOtp(String identifier, String emailDestination) {
+        String otp = otpApplication.generate(identifier);
+        emailService.sendVerificationOtp(emailDestination, otp);        
     }
 
     @Override
@@ -173,6 +185,22 @@ public class UserRepositoryServiceImpl implements UserRepository {
         // TODO: Integrate NotificationService / EmailService here
         // Generate a random token, save it to DB (e.g. PasswordResetToken entity), and send email.
         log.info("Simulating sending forgot password email to: " + email);
+    }
+
+    @Override
+    public boolean verifyOtp(String identifier, String code) {
+        return otpApplication.verify(identifier, code);
+    }
+
+    @Override
+    @Transactional
+    public UserDetails setEmailVerified(UserDetails user) {
+        var userEntity = userEntityRepository.findByEmail(user.getEmail()).orElseThrow(
+            () -> GeneratorException.badRequest(UserErrorKey.USER_NOT_FOUND).message("User Was Not Found!").build()
+        );
+        userEntity.setEmailVerified(true);
+        var savedUser = userEntityRepository.save(userEntity);
+        return mapEntityToUserDetails(savedUser);
     }
 
     @Override

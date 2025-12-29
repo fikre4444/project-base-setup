@@ -96,6 +96,22 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
         .body(token);
     }
 
+    // @Override
+    // public ResponseEntity<SendOtpResponse> sendOtp(String identifier) {
+    //     String phoneNumber = userApplicationService.sendOtp(identifier);
+    //     String maskedPhoneNumber = phoneNumber.replaceAll(".(?=.{4})", "*");
+    //     SendOtpResponse response = new SendOtpResponse();
+    //     response.setPhoneNumber(maskedPhoneNumber);
+    //     return ResponseEntity.ok(response);
+    // }
+
+    @Override
+    public ResponseEntity<UserDetail> verifyUser(String identifier,
+        String code) {
+        var userDetails = userApplicationService.verifyUser(identifier, code);
+        return ResponseEntity.ok(userDetailModelMapper.toDto(userDetails));
+    }
+
     @Override
     public ResponseEntity<UserDetail> register(RegisterUserRequest registerUserRequest) {
         CreateUser createUserBo = registerUserModelMapper.toBo(registerUserRequest);
@@ -103,7 +119,7 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
         var createdUser = userApplicationService.createUser(
             createUserBo, 
             Role.USER.roleName(),
-            true
+            false
         );
 
         return ResponseEntity

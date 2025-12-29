@@ -9,6 +9,17 @@ consumer-group:
   prefix: dev
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: abcd@gmail.com
+    password: abcd efgh ijkl mnop
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   servlet:
     multipart:
       enabled: true
@@ -92,6 +103,7 @@ application:
   #                max-entries: 100
   cors:
     allowed-origins:
+      - "http://localhost:5173"
       - "http://localhost:6004"
       - "http://localhost:4200"
       - "http://localhost:4201"

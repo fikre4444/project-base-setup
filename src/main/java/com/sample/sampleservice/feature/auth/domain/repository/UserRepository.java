@@ -27,6 +27,8 @@ public interface UserRepository {
 
     void forgotPassword(String email);
 
+    boolean verifyOtp(String identifier, String code);
+
     void sendVerify(String username, String password);
 
     Optional<OAuth2TokenResult> refresh(String refreshToken);
@@ -42,5 +44,7 @@ public interface UserRepository {
     UserDetails enableUser(String userId);
 
     UserDetails disableUser(String userId);
+
+    UserDetails setEmailVerified(UserDetails user);
 
 }

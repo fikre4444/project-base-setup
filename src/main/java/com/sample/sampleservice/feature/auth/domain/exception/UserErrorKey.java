@@ -20,7 +20,8 @@ public enum UserErrorKey implements ErrorKey {
     USER_LOCKED("user.locked"),
     ROLE_NOT_FOUND("Role.not.found"),
     EMAIL_ALREADY_EXISTS("Email.already.exists"),
-    USER_ALREADY_EXISTS("User.already.exists");
+    USER_ALREADY_EXISTS("User.already.exists"),
+    INVALID_OTP("invalid.otp");
 
     private final String key;
 

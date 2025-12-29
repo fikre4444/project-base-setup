@@ -22,4 +22,6 @@ public interface UserApplicationService {
     UserDetails enableUser(String id);
     UserDetails disableUser(String id);
     UserDetails disableSelfUser(String userId);
+
+    UserDetails verifyUser(String identifier, String code);
 }

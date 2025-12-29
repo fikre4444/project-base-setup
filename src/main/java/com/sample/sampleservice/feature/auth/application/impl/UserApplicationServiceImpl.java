@@ -59,6 +59,12 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
+    public UserDetails verifyUser(String identifier, String code) {
+        return userDomainService.verifyUser(identifier, code);
+    }
+
+
+    @Override
     public void sendVerify(String username, String password) {
         userDomainService.sendVerify(username, password);
     }

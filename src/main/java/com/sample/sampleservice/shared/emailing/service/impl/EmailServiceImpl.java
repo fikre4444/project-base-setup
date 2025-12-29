@@ -15,9 +15,11 @@ import com.sample.sampleservice.shared.emailing.service.EmailService;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
@@ -30,6 +32,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendRegistrationEmail(String to, String username) {
         try {
+            log.info("Send from {} to {}", from, to);
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper =
                 new MimeMessageHelper(message, true, "UTF-8");

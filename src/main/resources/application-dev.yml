@@ -103,6 +103,7 @@ application:
   #                max-entries: 100
   cors:
     allowed-origins:
+      - "https://fikre4444.github.io/project-base-setup-ui"
       - "http://localhost:5173"
       - "http://localhost:6004"
       - "http://localhost:4200"

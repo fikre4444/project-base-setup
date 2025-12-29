@@ -17,7 +17,7 @@ public record CreateUser(String password, String confirmPassword, String usernam
         Assert.notBlank("First name", firstName);
         Assert.notBlank("Last name", lastName);
 //        Assert.notBlank("email", email);
-        Assert.notBlank("Phone number", phoneNumber);
+        // Assert.notBlank("Phone number", phoneNumber);
 
         if (!StringUtils.equals(password, confirmPassword)) {
             throw GeneratorException.badRequest(UserErrorKey.CONFIRM_PASSWORD_MISMATCH).message("password and confirm password are not equal.").build();

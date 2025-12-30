@@ -77,19 +77,34 @@ public class AuthDelegateApiImpl implements AuthsApiDelegate {
     @Override
     public ResponseEntity<Token> login(String username, String password) {
         var token = tokenModelMapper.toDto(userApplicationService.login(username, password));
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", token.getRefreshToken())
-        .httpOnly(true)
-        .secure(true)
-        .path("/api/v1/auth/refresh")   // Only sent to refresh endpoint
-        .sameSite("Strict")             // Best for security (or Lax if mobile app)
-        .build();
-        ResponseCookie accessToken = ResponseCookie.from("access_token", token.getAccessToken())
-        .httpOnly(true)
-        .secure(true)
-        .path("/")
-        .sameSite("Strict")
-        .build();               
+        // ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", token.getRefreshToken())
+        // .httpOnly(true)
+        // .secure(true)
+        // .path("/api/v1/auth/refresh")   // Only sent to refresh endpoint
+        // .sameSite("Strict")             // Best for security (or Lax if mobile app)
+        // .build();
+        // ResponseCookie accessToken = ResponseCookie.from("access_token", token.getAccessToken())
+        // .httpOnly(true)
+        // .secure(true)
+        // .path("/")
+        // .sameSite("Strict")
+        // .build();               
         // return ResponseEntity.ok(token);
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", token.getRefreshToken())
+        .httpOnly(false)    // <--- ALLOWS JS TO READ IT (Debug only)
+        .secure(false)      // <--- ALLOWS HTTP
+        .path("/")          // <--- GLOBAL PATH (easier to find)
+        .maxAge(24 * 60 * 60)
+        .build();           // <--- NO SameSite defined (uses Browser Default)
+
+    // 2. Access Token - Global Path, No Security
+    ResponseCookie accessToken = ResponseCookie.from("access_token", token.getAccessToken())
+        .httpOnly(false)    // <--- ALLOWS JS TO READ IT (Debug only)
+        .secure(false)      // <--- ALLOWS HTTP
+        .path("/")
+        .maxAge(24 * 60 * 60)
+        .build();
         return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
         .header(HttpHeaders.SET_COOKIE, accessToken.toString())
